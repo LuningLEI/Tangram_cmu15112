@@ -1,0 +1,79 @@
+
+```{r, echo=FALSE}
+###########################
+# STYLE EDITS: IGNORE THIS
+###########################
+
+knitr::opts_chunk$set(message = FALSE) # include this if you don't want markdown to knit messages
+knitr::opts_chunk$set(warning = FALSE) # include this if you don't want markdown to knit warnings
+knitr::opts_chunk$set(echo = TRUE) # set echo=FALSE to hide code from html output
+```
+
+
+
+```{r}
+install.packages(rpart.plot)
+library("rpart")
+library("rpart.plot")
+library("car")
+library("ResourceSelection")
+library(MASS)
+library("dplyr")
+library("knitr")
+library("pander")
+library("nnet")
+library("readr")
+```
+
+```{r}
+
+thyroid <- readr::read_csv("renamed_thyroid.csv")
+```
+
+### default Model [Recurred] ###
+```{r}
+model <- glm(Recurred ~ Response + Stage + M + N + T + Risk + Focality + Pathology+ Adenopathy + Physical_Examination + Thyroid_Function + Hx_Radiothreapy + Hx_Smoking + Smoking + Gender + Age, data = thyroid)
+summary(model, digit = 2)
+```
+
+### Filtered Model [Recurred] ###
+```{r}
+model <- glm(Recurred ~ Response + Pathology + Stage, data = thyroid, family = binomial(link = "logit"))
+summary(model, digit = 2)
+```
+
+```{r}
+ResourceSelection::hoslem.test(thyroid$Recurred, 
+                               model$fitted.values)
+```
+
+### Classificaiton Trees ###
+```{r}
+thyroid.tree <- rpart(Recurred ~ Response + Pathology+ Adenopathy + Physical_Examination + Thyroid_Function + Hx_Radiothreapy + Hx_Smoking + Smoking + Gender + Age, data = thyroid, method = "class")
+rpart.plot(thyroid.tree, type = 0, clip.right.labs = FALSE, branch =0.6, under = TRUE)
+```
+### Response Variable: Response ###
+```{r}
+model <- multinom(Response ~ M + N + T + Focality + Pathology+ Adenopathy + Physical_Examination + Thyroid_Function + Hx_Radiothreapy + Hx_Smoking + Smoking + Gender + Age, data = thyroid)
+stepwise_model <- stepAIC(model, direction="both")
+summary(model)
+```
+
+### Classificaiton Trees ###
+```{r}
+thyroid.tree <- rpart(Response ~ M + N + T + Focality + Pathology+ Adenopathy + Physical_Examination + Thyroid_Function + Hx_Radiothreapy + Hx_Smoking + Smoking + Gender + Age, data = thyroid)
+rpart.plot(thyroid.tree, type = 0, clip.right.labs = FALSE, branch = 0.1, under = TRUE)
+```
+### Response Variable: Risk ###
+```{r}
+model <- multinom(Risk ~ + M + N + T + Focality + Pathology+ Adenopathy + Physical_Examination + Thyroid_Function + Hx_Radiothreapy + Hx_Smoking + Smoking + Gender + Age, data = thyroid)
+stepwise_model <- stepAIC(model, direction="both")
+summary(stepwise_model)
+```
+### Response Variable: Stage ###
+```{r}
+model <- multinom(Stage ~ + M + N + T + Focality + Pathology+ Adenopathy + Physical_Examination + Thyroid_Function + Hx_Radiothreapy + Hx_Smoking + Smoking + Gender + Age, data = thyroid)
+stepwise_model <- stepAIC(model, direction="both")
+summary(stepwise_model)
+```
+

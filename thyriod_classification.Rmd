@@ -1,0 +1,56 @@
+
+```{r, echo=FALSE}
+###########################
+# STYLE EDITS: IGNORE THIS
+###########################
+
+knitr::opts_chunk$set(message = FALSE) # include this if you don't want markdown to knit messages
+knitr::opts_chunk$set(warning = FALSE) # include this if you don't want markdown to knit warnings
+knitr::opts_chunk$set(echo = TRUE) # set echo=FALSE to hide code from html output
+```
+
+
+```{r}
+library("rpart")
+library("rpart.plot")
+library("car")
+library("ResourceSelection")
+library("MASS")
+library("dplyr")
+library("knitr")
+library("pander")
+library("nnet")
+library("readr")
+```
+
+```{r}
+training <- readr::read_csv("traning.csv")
+testing <- readr::read_csv("testing.csv")
+```
+
+```{r}
+model <- glm(Recurred ~ Response + Pathology + Stage, data = training, family = binomial(link = "logit"))
+summary(model, digit = 2)
+```
+
+```{r}
+ResourceSelection::hoslem.test(training$Recurred, 
+                               model$fitted.values)
+```
+
+```{r}
+model.prob <-predict(model, as.data.frame(testing),type = "response")
+levels(factor(testing$Recurred))
+model.pred <-ifelse(model.prob > 0.5,1,0)
+table(model.pred, testing$Recurred)
+```
+
+### Classificaiton Trees ###
+```{r}
+thyroid.tree <- rpart(Recurred ~ Response + Pathology+ Adenopathy + Physical_Examination + Thyroid_Function + Hx_Radiothreapy + Hx_Smoking + Smoking + Gender + Age, data = training, method = "class")
+rpart.plot(thyroid.tree, type = 0, clip.right.labs = FALSE, branch =0.6, under = TRUE)
+```
+
+```{r}
+thyroid.tree.pred <- (predict, thyroid.tree, as.data.frame(testing))
+```

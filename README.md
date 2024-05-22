@@ -1,7 +1,8 @@
-# Tangram_cmu15112
-CMU 15112 course project: Tangram
+Prediction of Thyroid Cancer 
+Project Date May/2024
+•	Processed 383 patients’ data provided by the UCI Machine Learning Repository 
+•	Visualized the distribution of 17 clinicopathologic features related to thyroid cancer treatment
+•	Found the 3 most important explanatory variables that influence the recurrence of thyroid cancer among 16 explanatory variables and their potential cause respectively
+•	Build a Logistic Regression Model with 283 training data and resulted in an prediction accuracy of 98% to 100 testing data
 
-This is simple interactive game written in python and cmu graphics
-The game allows pieces to be freely dragged and to adhere when they are correctly or wrongly placed.
-The they key "h" is pressed, the game provides hints or partial solutions to guide them towards the correct arrangement
-Automatically complete inspection and multiple-level settings are also designed in the game.
+data source: https://www.kaggle.com/datasets/jainaru/thyroid-disease-data
